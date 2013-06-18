@@ -8,7 +8,7 @@ import organisms.*;
 
 public final class Group4FirstOrganismPlayer implements Player {
 
-	static final String _CNAME = "Random Player";
+	static final String _CNAME = "Group 4 first player";
 	static final Color _CColor = new Color(1.0f, 0.67f, 0.67f);
 	private int state;
 	private Random rand;
