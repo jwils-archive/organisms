@@ -73,6 +73,8 @@ public final class Group4FirstOrganismPlayer implements Player {
 		if(energyleft <= 10 || foodleft > 0){
 			direction = 0;
 		}
+		
+		//if the organism has more than half the max possible energy reproduce the direction is arbitrary so far
 		if(energyleft > 500){
 			return new Move(REPRODUCE, WEST, state);
 		}
