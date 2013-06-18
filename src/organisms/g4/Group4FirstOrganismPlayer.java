@@ -63,6 +63,22 @@ public final class Group4FirstOrganismPlayer implements Player {
 		return state;
 	}
 
+	private boolean shouldStay(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {
+		if(energyleft <= 10 || foodleft > 0){
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean shouldReproduce(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {
+		if (energyleft > 250) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
 	/*
 	 * This is called by the simulator to determine how this Organism should move.
 	 * foodpresent is a four-element array that indicates whether any food is in adjacent squares
@@ -70,11 +86,8 @@ public final class Group4FirstOrganismPlayer implements Player {
 	 * foodleft is how much food is left on the current square
 	 * energyleft is this organism's remaining energy
 	 */
-	public Move move(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) throws Exception {
-
-		
+	public Move move(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) throws Exception {		
 		foodTracker.trackFood( foodpresent, foodleft);
-		
 		organismTracker.trackOrganisms(neighbors);
 		
 		Move m = null; // placeholder for return value
@@ -84,12 +97,12 @@ public final class Group4FirstOrganismPlayer implements Player {
 		int direction = rand.nextInt(6);
 		
 		//don't move if it will kill you, or if there is still food here
-		if(energyleft <= 10 || foodleft > 0){
+		if(shouldStay(foodpresent, neighbors, foodleft, energyleft)){
 			direction = 0;
 		}
 		
 		//if the organism has more than half the max possible energy reproduce the direction is arbitrary so far
-		if(energyleft > 250){
+		if(shouldReproduce(foodpresent, neighbors, foodleft, energyleft)){
 			return new Move(REPRODUCE, WEST, state);
 		}
 		
