@@ -65,8 +65,18 @@ public final class Group4FirstOrganismPlayer implements Player {
 
 		Move m = null; // placeholder for return value
 		
+
 		// this player selects randomly
 		int direction = rand.nextInt(6);
+		
+		//don't move if it will kill you, or if there is still food here
+		if(energyleft <= 10 || foodleft > 0){
+			direction = 0;
+		}
+		if(energyleft > 500){
+			return new Move(REPRODUCE, WEST, state);
+		}
+		
 		
 		switch (direction) {
 		case 0: m = new Move(STAYPUT); break;
