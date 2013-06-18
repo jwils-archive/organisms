@@ -13,23 +13,20 @@ public final class Group4FirstOrganismPlayer implements Player {
 	private int state;
 	private Random rand;
 	private OrganismsGame game;
-	
+
 	private FoodTracker foodTracker;
 	private OtherOrganismTracker organismTracker;
 	private PersonalSettingsTracker settingsTracker;
-	
-
 
 	/*
-	 * This method is called when the Organism is created.
-	 * The key is the value that is passed to this organism by its parent (not used here)
+	 * This method is called when the Organism is created. The key is the value
+	 * that is passed to this organism by its parent (not used here)
 	 */
-	public void register(OrganismsGame game, int key) throws Exception
-	{
+	public void register(OrganismsGame game, int key) throws Exception {
 		rand = new Random();
 		state = rand.nextInt(256);
 		this.game = game;
-		
+
 		foodTracker = new FoodTracker();
 		organismTracker = new OtherOrganismTracker();
 		settingsTracker = new PersonalSettingsTracker();
@@ -63,66 +60,86 @@ public final class Group4FirstOrganismPlayer implements Player {
 		return state;
 	}
 
-	private boolean shouldStay(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {
-		if(energyleft <= 10 || foodleft > 0){
-			return true;
+	private boolean shouldMove(boolean[] foodpresent, int[] neighbors,
+			int foodleft, int energyleft) {
+		// if the organism has more than half the max possible energy reproduce
+		// the direction is arbitrary so far
+		if (energyleft <= 10 || foodleft == 0) {
+			return false;
 		}
 		return false;
 	}
-	
-	private boolean shouldReproduce(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {
+
+	private boolean shouldReproduce(boolean[] foodpresent, int[] neighbors,
+			int foodleft, int energyleft) {
 		if (energyleft > 250) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
-	
-	/*
-	 * This is called by the simulator to determine how this Organism should move.
-	 * foodpresent is a four-element array that indicates whether any food is in adjacent squares
-	 * neighbors is a four-element array that holds the externalState for any organism in an adjacent square
-	 * foodleft is how much food is left on the current square
-	 * energyleft is this organism's remaining energy
-	 */
-	public Move move(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) throws Exception {		
-		foodTracker.trackFood( foodpresent, foodleft);
-		organismTracker.trackOrganisms(neighbors);
-		
-		Move m = null; // placeholder for return value
-		
 
-		// this player selects randomly
-		int direction = rand.nextInt(6);
-		
-		//don't move if it will kill you, or if there is still food here
-		if(shouldStay(foodpresent, neighbors, foodleft, energyleft)){
-			direction = 0;
-		}
-		
-		//if the organism has more than half the max possible energy reproduce the direction is arbitrary so far
-		if(shouldReproduce(foodpresent, neighbors, foodleft, energyleft)){
-			return new Move(REPRODUCE, WEST, state);
-		}
-		
-		
+	private void preMoveTrack(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {
+		foodTracker.trackFood(foodpresent, foodleft);
+		organismTracker.trackOrganisms(neighbors);
+	}
+
+	private void postMoveTrack(Move move, boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {
+
+	}
+
+	private Move reproduce(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) throws Exception {
+		return new Move(REPRODUCE, WEST, state);
+	}
+
+	private Move makeMove(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) throws Exception {
+		Move m = null;
+		int direction = rand.nextInt(3);
 		switch (direction) {
-		case 0: m = new Move(STAYPUT); break;
-		case 1: m = new Move(WEST); break;
-		case 2: m = new Move(EAST); break;
-		case 3: m = new Move(NORTH); break;
-		case 4: m = new Move(SOUTH); break;
-		case 5:	direction = rand.nextInt(4);
-				// if this organism will reproduce:
-				// the second argument to the constructor is the direction to which the offspring should be born
-				// the third argument is the initial value for that organism's state variable (passed to its register function)
-				if (direction == 0) m = new Move(REPRODUCE, WEST, state);
-				else if (direction == 1) m = new Move(REPRODUCE, EAST, state);
-				else if (direction == 2) m = new Move(REPRODUCE, NORTH, state);
-				else m = new Move(REPRODUCE, SOUTH, state);
+		case 0:
+			m = new Move(STAYPUT);
+			break;
+		case 1:
+			m = new Move(WEST);
+			break;
+		case 2:
+			m = new Move(EAST);
+			break;
+		case 3:
+			m = new Move(NORTH);
+			break;
+		case 4:
+			m = new Move(SOUTH);
+			break;
 		}
 		return m;
+	}
+
+	/*
+	 * This is called by the simulator to determine how this Organism should
+	 * move. foodpresent is a four-element array that indicates whether any food
+	 * is in adjacent squares neighbors is a four-element array that holds the
+	 * externalState for any organism in an adjacent square foodleft is how much
+	 * food is left on the current square energyleft is this organism's
+	 * remaining energy
+	 */
+	public Move move(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft)
+			throws Exception {
+		preMoveTrack(foodpresent, neighbors, foodleft, energyleft);
+
+		Move move; // placeholder for return value
+
+		if (shouldReproduce(foodpresent, neighbors, foodleft, energyleft)) {
+			move = reproduce(foodpresent, neighbors, foodleft, energyleft);
+		} else if (shouldMove(foodpresent, neighbors, foodleft, energyleft)) {
+			move = makeMove(foodpresent, neighbors, foodleft, energyleft);
+		} else {
+			move = new Move(STAYPUT);
+		}
+
+		postMoveTrack(move, foodpresent, neighbors, foodleft, energyleft);
+
+		return move;
 	}
 
 }
