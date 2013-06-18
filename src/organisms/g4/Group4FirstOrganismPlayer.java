@@ -72,6 +72,11 @@ public final class Group4FirstOrganismPlayer implements Player {
 	 */
 	public Move move(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) throws Exception {
 
+		
+		foodTracker.trackFood( foodpresent, foodleft);
+		
+		organismTracker.trackOrganisms(neighbors);
+		
 		Move m = null; // placeholder for return value
 		
 
