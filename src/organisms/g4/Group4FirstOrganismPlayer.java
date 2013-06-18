@@ -13,6 +13,11 @@ public final class Group4FirstOrganismPlayer implements Player {
 	private int state;
 	private Random rand;
 	private OrganismsGame game;
+	
+	private FoodTracker foodTracker;
+	private OtherOrganismTracker organismTracker;
+	private PersonalSettingsTracker settingsTracker;
+	
 
 
 	/*
@@ -24,6 +29,10 @@ public final class Group4FirstOrganismPlayer implements Player {
 		rand = new Random();
 		state = rand.nextInt(256);
 		this.game = game;
+		
+		foodTracker = new FoodTracker();
+		organismTracker = new OtherOrganismTracker();
+		settingsTracker = new PersonalSettingsTracker();
 	}
 
 	/*
