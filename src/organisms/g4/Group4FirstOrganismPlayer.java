@@ -84,8 +84,8 @@ public final class Group4FirstOrganismPlayer implements Player {
 		organismTracker.trackOrganisms(neighbors);
 	}
 
-	private void postMoveTrack(Move move, boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {
-
+	private void postMoveTrack(Move move, boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) throws Exception {
+		settingsTracker.psTrackerStore(energyleft, move.type()==REPRODUCE);
 	}
 
 	private Move reproduce(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) throws Exception {
