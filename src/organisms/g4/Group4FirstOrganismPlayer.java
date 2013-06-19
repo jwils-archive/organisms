@@ -64,10 +64,10 @@ public final class Group4FirstOrganismPlayer implements Player {
 			int foodleft, int energyleft) {
 		// if the organism has more than half the max possible energy reproduce
 		// the direction is arbitrary so far
-		if (energyleft <= 10 || foodleft == 0) {
+		if (energyleft <= 10 && foodleft == 0) {
 			return false;
 		}
-		return false;
+		return true;
 	}
 
 	private boolean shouldReproduce(boolean[] foodpresent, int[] neighbors,
@@ -95,6 +95,7 @@ public final class Group4FirstOrganismPlayer implements Player {
 	private Move makeMove(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) throws Exception {
 		Move m = null;
 		int direction = rand.nextInt(3);
+		direction+=1;
 		switch (direction) {
 		case 0:
 			m = new Move(STAYPUT);
