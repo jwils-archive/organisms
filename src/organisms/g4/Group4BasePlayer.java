@@ -100,8 +100,7 @@ public abstract class Group4BasePlayer implements Player {
 	 * food is left on the current square energyleft is this organism's
 	 * remaining energy
 	 */
-	public Move move(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft)
-			throws Exception {
+	public Move move(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {
 		preMoveTrack(foodpresent, neighbors, foodleft, energyleft);
 
 		Move move; // placeholder for return value

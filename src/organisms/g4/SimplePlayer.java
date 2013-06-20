@@ -15,13 +15,13 @@ public class SimplePlayer extends TrackingPlayer {
 		// TODO Auto-generated method stub
 		if (energyleft > 200) {
 			int direction = -1;
-			for (int i =1; i < 6; i++) {
+			for (int i =1; i < 5; i++) {
 				if (foodpresent[i] && neighbors[i] == -1) {
 					direction = i;
 				}
 			}
 			if (direction == -1) {
-				for (int i =1; i < 6; i++) {
+				for (int i =1; i < 5; i++) {
 					if ( neighbors[i] == -1) {
 						direction = i;
 					}
@@ -39,11 +39,12 @@ public class SimplePlayer extends TrackingPlayer {
 		Move m = null;
 
 		
-		if (energyleft <= ENERGY_TO_MOVE && foodleft == 0) {
+		if (energyleft <= ENERGY_TO_MOVE * 5 && foodleft != 0) {
 			return null;
 		}
+		
 		int direction = 4;
-		for (int i =1; i < 6; i++) {
+		for (int i =1; i < 5; i++) {
 			if (foodpresent[i]) {
 				direction = i;
 			}
