@@ -13,8 +13,21 @@ public class SimplePlayer extends TrackingPlayer {
 	protected Move reproduce(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
 		// TODO Auto-generated method stub
-		if (energyleft > 250) {
-			return new Move(REPRODUCE, WEST, getState());
+		if (energyleft > 200) {
+			int direction = -1;
+			for (int i =1; i < 6; i++) {
+				if (foodpresent[i] && neighbors[i] == -1) {
+					direction = i;
+				}
+			}
+			if (direction == -1) {
+				for (int i =1; i < 6; i++) {
+					if ( neighbors[i] == -1) {
+						direction = i;
+					}
+				}
+			}
+			return new Move(REPRODUCE, direction, getState());
 		}
 
 		return null;
@@ -24,16 +37,17 @@ public class SimplePlayer extends TrackingPlayer {
 	protected Move makeMove(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
 		Move m = null;
+
 		
-		//WE SHOULDNT MOVE
 		if (energyleft <= ENERGY_TO_MOVE && foodleft == 0) {
 			return null;
 		}
-		
-		
-		int direction = nextRandomInt(3);
-		direction+=1;
-		
+		int direction = 4;
+		for (int i =1; i < 6; i++) {
+			if (foodpresent[i]) {
+				direction = i;
+			}
+		}
 		switch (direction) {
 		case 0:
 			m = new Move(STAYPUT);
@@ -56,7 +70,6 @@ public class SimplePlayer extends TrackingPlayer {
 
 	@Override
 	public String name() {
-		// TODO Auto-generated method stub
 		return "Basic Player";
 	}
 
