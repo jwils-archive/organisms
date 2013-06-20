@@ -31,8 +31,16 @@ public abstract class Group4BasePlayer implements Player {
 		ENERGY_TO_STAY_PUT = game.s();
 		ENERGY_PER_FOOD_UNIT = game.u();
 		ENERGY_TO_MOVE = game.v();
+		
+		rand = new Random();
+		this.game = game;
+		
 		init();
 		register(key);
+	}
+	
+	protected int nextRandomInt(int max) {
+		return rand.nextInt(max);
 	}
 	
 	protected void init() {};
@@ -77,7 +85,15 @@ public abstract class Group4BasePlayer implements Player {
 	public int externalState() throws Exception {
 		return state;
 	}
+	
+	protected int getState() {
+		return state;
+	}
 
+	protected void setState(int s) {
+		state = s;
+	}
+	
 	/*
 	 * This is called by the simulator to determine how this Organism should
 	 * move. foodpresent is a four-element array that indicates whether any food
