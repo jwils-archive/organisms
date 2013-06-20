@@ -6,7 +6,6 @@ public class SimplePlayer extends TrackingPlayer {
 
 	@Override
 	protected void register(int key) {
-		// TODO Auto-generated method stub
 		
 	}
 

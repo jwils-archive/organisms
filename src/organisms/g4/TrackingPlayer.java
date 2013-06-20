@@ -20,13 +20,15 @@ public abstract class TrackingPlayer extends Group4BasePlayer {
 	@Override
 	protected void preMoveTrack(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
-		foodTracker.trackFood(foodpresent, foodleft);
-		organismTracker.trackOrganisms(neighbors);
+		foodTracker.add(foodleft);
 	}
 
 	@Override
 	protected void postMoveTrack(Move move, boolean[] foodpresent,
 			int[] neighbors, int foodleft, int energyleft) {
-		settingsTracker.psTrackerStore(energyleft, move.type()==REPRODUCE);		
+		settingsTracker.psTrackerStore(energyleft, move.type()==REPRODUCE);	
+		foodTracker.add(move, foodpresent);
+		organismTracker.add(move, neighbors);
+
 	}
 }
