@@ -5,11 +5,11 @@ import java.util.HashMap;
 
 import organisms.Move;
 
-public class Tracker {
+public abstract class Tracker {
 
-	private HashMap<Point,Boolean> map = new HashMap<Point,Boolean>();
-	private int x;
-	private int y;
+	protected HashMap<Point,Integer> map = new HashMap<Point,Integer>();
+	protected int x;
+	protected int y;
 
 	// I don't add the origin to the map until we move away from it.
 	// This is because we will get a more updated version of the
@@ -34,7 +34,8 @@ public class Tracker {
 		double end;
 		
 		for (int i = 0; i < array.length; i++) {
-			if (array[i].equals(true)) {
+			if (array[i].equals(0)) {}
+			else {
 				count++;
 			}
 		}
@@ -51,22 +52,12 @@ public class Tracker {
 	// the OrganismTracker version.
 	// At the end of the method it updates the x and y coordinates
 	
-	public void add(Move m, int[] hasBoolean) throws Exception {
+	public void add(Move m, int[] hasBoolean) {
 
-		boolean[] array = new boolean[hasBoolean.length];
-		for (int i = 0; i < hasBoolean.length; i++) {
-			if (hasBoolean[i] != 0) {
-				array[i] = true;
-			}
-			else {
-				array[i] = false;
-			}
-		}
-
-		map.put(new Point(x,y-1), array[0]);
-		map.put(new Point(x+1,y), array[1]);
-		map.put(new Point(x,y+1), array[2]);
-		map.put(new Point(x-1,y), array[3]);
+		map.put(new Point(x-1,y), hasBoolean[1]);
+		map.put(new Point(x+1,y), hasBoolean[2]);
+		map.put(new Point(x,y-1), hasBoolean[3]);
+		map.put(new Point(x,y+1), hasBoolean[4]);
 
 		if (m.type() == 1) {
 			x--;

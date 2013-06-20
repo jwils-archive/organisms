@@ -1,9 +1,5 @@
 package organisms.g4.trackers;
 
-public class OtherOrganismTracker {
-	
-	public void trackOrganisms(int[] neighbors) {
-		
-	}
+public class OtherOrganismTracker extends Tracker {
 
 }
