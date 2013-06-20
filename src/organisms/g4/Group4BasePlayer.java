@@ -58,9 +58,7 @@ public abstract class Group4BasePlayer implements Player {
 	/*
 	 * Return the name to be displayed in the simulator.
 	 */
-	public String name() throws Exception {
-		return _CNAME;
-	}
+	public abstract String name();
 
 	/*
 	 * Return the color to be displayed in the simulator.

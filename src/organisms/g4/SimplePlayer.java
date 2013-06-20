@@ -55,4 +55,10 @@ public class SimplePlayer extends TrackingPlayer {
 		return m;
 	}
 
+	@Override
+	public String name() {
+		// TODO Auto-generated method stub
+		return "Basic Player";
+	}
+
 }
