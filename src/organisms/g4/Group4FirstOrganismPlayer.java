@@ -5,6 +5,9 @@ import java.io.*;
 import java.awt.Color;
 
 import organisms.*;
+import organisms.g4.trackers.FoodTracker;
+import organisms.g4.trackers.OtherOrganismTracker;
+import organisms.g4.trackers.PersonalSettingsTracker;
 
 public final class Group4FirstOrganismPlayer implements Player {
 
@@ -94,6 +97,8 @@ public final class Group4FirstOrganismPlayer implements Player {
 
 	private Move makeMove(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) throws Exception {
 		Move m = null;
+		
+				
 		int direction = rand.nextInt(3);
 		switch (direction) {
 		case 0:
@@ -126,6 +131,7 @@ public final class Group4FirstOrganismPlayer implements Player {
 	public Move move(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft)
 			throws Exception {
 		preMoveTrack(foodpresent, neighbors, foodleft, energyleft);
+		System.out.println(foodpresent.length);
 
 		Move move; // placeholder for return value
 

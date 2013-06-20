@@ -22,29 +22,29 @@ public class Move implements Constants, Serializable {
 	int _key;
 
 
-    public Move(int __type) throws Exception {
+    public Move(int __type) {
         _type = __type;
     }
 
-    public Move(int __type, int __childpos, int __key) throws Exception {
+    public Move(int __type, int __childpos, int __key) {
         _type = __type;
         _childpos = __childpos;
 	_key = __key;
     }
 
-    public int type() throws Exception {
+    public int type() {
         return _type;
     }
 
-    public void setType(int t) throws Exception {
+    public void setType(int t) {
         _type = t;
     }
 
-    public int childpos() throws Exception {
+    public int childpos() {
         return _childpos;
     }
 
-    public int key() throws Exception {
+    public int key() {
         return _key;
     }
 
