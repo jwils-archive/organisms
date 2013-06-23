@@ -12,7 +12,7 @@ public class DataForChildTest implements Constants {
 
 	@Before
 	public void setUp() throws Exception {
-		d1 = new DataForChild(NORTH,true,4,3);
+		d1 = new DataForChild(NORTH,4,3, (int)Math.pow(2,13));
 	}
 
 	@After
@@ -21,6 +21,7 @@ public class DataForChildTest implements Constants {
 
 	@Test
 	public void test() {
+		System.out.println(d1.getTurnNumber());
 		assertEquals("ENCODE DECODE FAILED", d1, DataForChild.decode(d1.encode()));
 	}
 

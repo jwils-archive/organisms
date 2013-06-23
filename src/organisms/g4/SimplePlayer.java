@@ -7,7 +7,7 @@ public class SimplePlayer extends TrackingPlayer {
 
 	@Override
 	protected void register(int key) {
-		
+
 	}
 
 	@Override

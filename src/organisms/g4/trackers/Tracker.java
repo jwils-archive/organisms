@@ -15,11 +15,32 @@ public abstract class Tracker {
 	// This is because we will get a more updated version of the
 	// boolean to which it's mapped after it moves
 	
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
 	public Tracker(){
 		x = 0;
 		y = 0;
 	}
 
+	public Tracker(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+	
 	// Return current location in map
 	
 	public Point currentLocation() {

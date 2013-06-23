@@ -2,19 +2,19 @@ package organisms.g4;
 
 import organisms.Move;
 import organisms.g4.trackers.FoodTracker;
-import organisms.g4.trackers.OtherOrganismTracker;
+import organisms.g4.trackers.OrganismTracker;
 import organisms.g4.trackers.PersonalSettingsTracker;
 
 @SuppressWarnings("serial")
 public abstract class TrackingPlayer extends Group4BasePlayer {
 	protected FoodTracker foodTracker;
-	protected OtherOrganismTracker organismTracker;
+	protected OrganismTracker organismTracker;
 	protected PersonalSettingsTracker settingsTracker;
 
 	@Override
 	protected void init() {
 		foodTracker = new FoodTracker();
-		organismTracker = new OtherOrganismTracker();
+		organismTracker = new OrganismTracker();
 		settingsTracker = new PersonalSettingsTracker();
 	}
 

@@ -4,35 +4,34 @@ public class DataForChild {
 	private int parentLocation = -1;
 	private final int DOP_WIDTH = 2;
 	
-	
-	private boolean parentWantsToComunicate = false;
-	private final int PWTC_WIDTH = 1;
-	
 	private int originX;
 	private int originY;
-	private final int LOCATION_WIDTH = 16;
+	private final int LOCATION_WIDTH = 8;
 	
-	private final int ADD_TO_LOCATION = 2^(LOCATION_WIDTH -1) / 2 - 1;
+	private final int ADD_TO_LOCATION = (int)Math.pow(2,LOCATION_WIDTH) / 2 - 1;
+	
+	
+	private int turnNumber;
+	
 	
 	private DataForChild(int encodedData) {
-		setParentLocation(encodedData & getMask(DOP_WIDTH));
+		parentLocation = encodedData & getMask(DOP_WIDTH);
 		encodedData  >>>= DOP_WIDTH;
-	
-		setParentWantsToComunicate((encodedData & getMask(PWTC_WIDTH)) != 0);
-		encodedData >>>= PWTC_WIDTH;
 		
 		originX = encodedData & getMask(LOCATION_WIDTH);
 		encodedData >>>= LOCATION_WIDTH;
 		
 		originY = encodedData & getMask(LOCATION_WIDTH);
 		encodedData >>>= LOCATION_WIDTH;
+		
+		setTurnNumber(encodedData);
 	}
 	
-	public DataForChild(int dop, boolean pwc, int ox, int oy) {
+	public DataForChild(int dop, int ox, int oy, int turnNumber) {
 		setParentLocation(dop);
-		setParentWantsToComunicate(pwc);
 		setOriginX(ox);
 		setOriginY(oy);
+		setTurnNumber(turnNumber);
 	}
 	
 	public int getMask(int width) {
@@ -45,8 +44,10 @@ public class DataForChild {
 			return 0x7;
 		case 4:
 			return 0xF;
-		case 16:
-			return 0xFFFF;
+		case 7:
+			return 0x7F;
+		case 8:
+			return 0xFF;
 		default:
 			throw new RuntimeException();
 		}
@@ -62,6 +63,7 @@ public class DataForChild {
 	
 	public int encode() {
 		int output = 0;
+		output = getTurnNumber();
 		
 		output <<= LOCATION_WIDTH;	
 		output += originY;
@@ -69,12 +71,8 @@ public class DataForChild {
 		output <<= LOCATION_WIDTH;		
 		output += originX;
 		
-		output <<= PWTC_WIDTH;
-		if (parentWantsToComunicate())
-			output += 1;
-		
 		output <<= DOP_WIDTH;
-		output += getParentLocation();
+		output += parentLocation;
 
 		return output;
 	}
@@ -84,19 +82,14 @@ public class DataForChild {
 	}
 
 	public int getParentLocation() {
-		return parentLocation;
+		return parentLocation + 1;
 	}
 
 	public void setParentLocation(int parentLocation) {
-		this.parentLocation = parentLocation;
-	}
-
-	public boolean parentWantsToComunicate() {
-		return parentWantsToComunicate;
-	}
-
-	public void setParentWantsToComunicate(boolean parentWantsToComunicate) {
-		this.parentWantsToComunicate = parentWantsToComunicate;
+		if (parentLocation > 4 || parentLocation < 1) {
+			throw new IndexOutOfBoundsException();
+		}
+		this.parentLocation = parentLocation - 1;
 	}
 
 	public int getOriginX() {
@@ -107,11 +100,11 @@ public class DataForChild {
 		this.originX = add(originX);
 	}
 
-	private int getOriginY() {
+	public int getOriginY() {
 		return subtract(originY);
 	}
 
-	private void setOriginY(int originY) {
+	public void setOriginY(int originY) {
 		this.originY = add(originY);
 	}
 
@@ -120,17 +113,25 @@ public class DataForChild {
 		if (o instanceof DataForChild) {
 			DataForChild other = (DataForChild) o;
 			return getOriginX() == other.getOriginX() && getOriginY() == other.getOriginY() 
-					&& parentWantsToComunicate() == other.parentWantsToComunicate()
-					&& getParentLocation() == other.getParentLocation();
+					&& getParentLocation() == other.getParentLocation()
+					&& getTurnNumber() == other.getTurnNumber();
 		}
 		return false;
 	}
 	
 	public String toString() {
 		return "Parent Direction: " + getParentLocation() + 
-				" Parent Coms: " +  parentWantsToComunicate() +
 				" OX: " + getOriginX() + 
-				" OY: " + getOriginY();
+				" OY: " + getOriginY() +
+				" Turn Number: " + getTurnNumber();
 				
+	}
+	
+	public int getTurnNumber() {
+		return turnNumber;
+	}
+
+	public void setTurnNumber(int turnNumber) {
+		this.turnNumber = turnNumber;
 	}
 }

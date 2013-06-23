@@ -5,6 +5,14 @@ import organisms.Move;
 
 public class FoodTracker extends Tracker {
 	
+	public FoodTracker(int x, int y) {
+		super(x,y);
+	}
+	
+	public FoodTracker() {
+		super();
+	}
+	
 	public int[] toIntegerArray(boolean[] foodPresent) {
 		int[] array = new int[foodPresent.length];
 		for (int i = 0; i < foodPresent.length; i++) {

@@ -25,7 +25,7 @@ public abstract class Group4BasePlayer implements Player, Constants  {
 	public int ENERGY_TO_STAY_PUT = 0;
 	
 	static final String _CNAME = "Group 4 first player";
-	static Color _CColor = new Color(0.0f, 0.67f, 0.67f);
+	Color _CColor = new Color(0.0f, 0.67f, 0.67f);
 	private int state;
 	private Random rand;
 	private OrganismsGame game;
