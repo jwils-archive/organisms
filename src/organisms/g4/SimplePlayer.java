@@ -2,6 +2,7 @@ package organisms.g4;
 
 import organisms.Move;
 
+@SuppressWarnings("serial")
 public class SimplePlayer extends TrackingPlayer {
 
 	@Override
@@ -13,7 +14,7 @@ public class SimplePlayer extends TrackingPlayer {
 	protected Move reproduce(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
 		// TODO Auto-generated method stub
-		if (energyleft > 200) {
+		if (energyleft > REPRODUCE_ENERGY) {
 			int direction = -1;
 			for (int i =1; i < 5; i++) {
 				if (foodpresent[i] && neighbors[i] == -1) {
@@ -44,9 +45,9 @@ public class SimplePlayer extends TrackingPlayer {
 		}
 		
 		int direction = 4;
-		for (int i =1; i < 5; i++) {
-			if (foodpresent[i]) {
-				direction = i;
+		for (int move : getValidMoves(neighbors)) {
+			if (foodpresent[move]) {
+				direction = move;
 			}
 		}
 		switch (direction) {

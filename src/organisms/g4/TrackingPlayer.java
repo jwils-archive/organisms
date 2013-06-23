@@ -5,6 +5,7 @@ import organisms.g4.trackers.FoodTracker;
 import organisms.g4.trackers.OtherOrganismTracker;
 import organisms.g4.trackers.PersonalSettingsTracker;
 
+@SuppressWarnings("serial")
 public abstract class TrackingPlayer extends Group4BasePlayer {
 	protected FoodTracker foodTracker;
 	protected OtherOrganismTracker organismTracker;

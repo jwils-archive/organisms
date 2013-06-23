@@ -1,25 +1,34 @@
 package organisms.g4;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Random;
 
 import organisms.Move;
 import organisms.OrganismsGame;
 import organisms.Player;
 
-public abstract class Group4BasePlayer implements Player {
+public abstract class Group4BasePlayer implements Player, Constants  {
 
+	/**
+	 * 
+	 */
+	public static final long serialVersionUID = 1L;
+	
+	/**
+	 * Environment Variables set on create.
+	 */
+	public int MAX_ENERGY = 0;
+	public int ENERGY_PER_FOOD_UNIT = 0;
+	public int MAX_FOOD_PER_CELL = 0;
+	public int ENERGY_TO_MOVE = 0;
+	public int ENERGY_TO_STAY_PUT = 0;
+	
 	static final String _CNAME = "Group 4 first player";
 	static Color _CColor = new Color(0.0f, 0.67f, 0.67f);
 	private int state;
 	private Random rand;
 	private OrganismsGame game;
-	
-	protected int MAX_ENERGY;
-	protected int ENERGY_PER_FOOD_UNIT;
-	protected int MAX_FOOD_PER_CELL;
-	protected int ENERGY_TO_MOVE;
-	protected int ENERGY_TO_STAY_PUT;
 
 	/*
 	 * This method is called when the Organism is created. The key is the value
@@ -92,6 +101,10 @@ public abstract class Group4BasePlayer implements Player {
 		state = s;
 	}
 	
+	public OrganismsGame getGame() {
+		return game;
+	}
+	
 	/*
 	 * This is called by the simulator to determine how this Organism should
 	 * move. foodpresent is a four-element array that indicates whether any food
@@ -119,5 +132,22 @@ public abstract class Group4BasePlayer implements Player {
 
 		return move;
 	}
-
+	 
+	public boolean isValidMove(int move, int[] neighbors) {
+		if (neighbors[move] != -1) {
+			return false;
+		}
+		return true;
+	}
+	
+	public int[] getValidMoves(int[] neighbors) {
+		int[] validMoves = new int[4];
+		int validMoveCount = 0;
+		for (int i = 1; i < 5; i++) {
+			if (isValidMove(i, neighbors)) {
+				validMoves[validMoveCount++] = i;
+			}
+		}
+		return Arrays.copyOf(validMoves, validMoveCount);
+	}
 }
