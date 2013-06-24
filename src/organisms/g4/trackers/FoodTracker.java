@@ -13,6 +13,8 @@ public class FoodTracker extends Tracker {
 		super();
 	}
 	
+	
+	
 	public int[] toIntegerArray(boolean[] foodPresent) {
 		int[] array = new int[foodPresent.length];
 		for (int i = 0; i < foodPresent.length; i++) {
@@ -32,6 +34,7 @@ public class FoodTracker extends Tracker {
 	
 	public void add(int foodValue) {
 		map.put(new Point(x,y), foodValue);
+		whenThere.put(turn, new Point(x,y));
 	}
 
 }
