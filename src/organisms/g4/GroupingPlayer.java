@@ -10,6 +10,26 @@ public class GroupingPlayer extends KnowledgePlayer {
 	
 	static int NORMAL_STATE = 88;
 	static int MOVE_STATE = 89;
+	
+	private boolean[] friendlySquares = new boolean[5];
+	
+	@Override
+	protected void preMoveTrack(boolean[] foodpresent, int[] neighbors,
+			int foodleft, int energyleft) {
+		super.preMoveTrack(foodpresent, neighbors, foodleft, energyleft);
+		for (int n = 1; n < 5; n++) {
+			if (neighbors[n] == MOVE_STATE) {
+				friendlySquares[n] = true;
+			}
+			if ((friendlySquares[n] == true) &&
+					(neighbors[n] != NORMAL_STATE) &&
+					(neighbors[n] != MOVE_STATE) &&
+					(neighbors[n] != -1)) {
+				friendlySquares[n] = false;
+			}
+		}
+	}
+	
 	@Override
 	protected Move reproduce(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
