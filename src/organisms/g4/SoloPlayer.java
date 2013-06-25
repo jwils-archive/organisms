@@ -96,7 +96,7 @@ public class SoloPlayer extends TrackingPlayer {
 
 	@Override
 	public String name() {
-		return "Heuristics Players";
+		return "Solo Player";
 	}
 
 }
