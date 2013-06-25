@@ -11,10 +11,10 @@ import organisms.g4.trackers.PersonalSettingsTracker;
 
 @SuppressWarnings("serial")
 public class KnowledgePlayer extends Group4BasePlayer {
-	private int turnNumber = 0;
-	private FoodTracker foodTracker;
-	private OrganismTracker organismTracker;
-	private PersonalSettingsTracker settingsTracker;
+	protected int turnNumber = 0;
+	protected FoodTracker foodTracker;
+	protected OrganismTracker organismTracker;
+	protected PersonalSettingsTracker settingsTracker;
 	
 	private Decoder decoder = null;
 	private int directionOfCommunication;
@@ -32,8 +32,9 @@ public class KnowledgePlayer extends Group4BasePlayer {
 		} else {
 			DataForChild data = DataForChild.decode(key);
 			directionOfCommunication = data.getParentLocation();
-			foodTracker = new FoodTracker(data.getOriginX(), data.getOriginY()); //TODO: ACCOUNT FOR DIR OF PARENT
-			organismTracker = new OrganismTracker(data.getOriginX(), data.getOriginY());
+
+			foodTracker = new FoodTracker(-data.getOriginX(), -data.getOriginY());
+			organismTracker = new OrganismTracker(-data.getOriginX(), -data.getOriginY());
 			settingsTracker = new PersonalSettingsTracker();
 			turnNumber = data.getTurnNumber() + 1;
 		}
@@ -72,6 +73,7 @@ public class KnowledgePlayer extends Group4BasePlayer {
 		foodTracker.add(move, foodpresent);
 		organismTracker.add(move, neighbors);
 		turnNumber++;
+		setState(-1*foodTracker.getY());
 	}
 	
 	@Override
@@ -115,7 +117,10 @@ public class KnowledgePlayer extends Group4BasePlayer {
 		}
 		
 		directionOfCommunication = direction;
-		return new Move(REPRODUCE, direction, data.encode());
+		if (data != null) {
+			return new Move(REPRODUCE, direction, data.encode());
+		}
+		return null;
 	}
 	
 	private int reverse(int direction) {

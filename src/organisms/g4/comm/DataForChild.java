@@ -93,6 +93,7 @@ public class DataForChild {
 	}
 
 	public int getOriginX() {
+		//return originX;
 		return subtract(originX);
 	}
 
@@ -101,6 +102,7 @@ public class DataForChild {
 	}
 
 	public int getOriginY() {
+		//return originY;
 		return subtract(originY);
 	}
 

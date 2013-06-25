@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+import organisms.Constants;
 import organisms.Move;
 
-public abstract class Tracker {
+public abstract class Tracker implements Constants {
 
 	protected HashMap<Point,Integer> map = new HashMap<Point,Integer>();
 	protected TreeMap<Integer,Point> whenThere = new TreeMap<Integer,Point>();
@@ -102,29 +103,29 @@ public abstract class Tracker {
 	
 	public void add(Move m, int[] hasBoolean) {
 
-		map.put(new Point(x-1,y), hasBoolean[1]);
+		map.put(new Point(x-1,y), hasBoolean[EAST]);
 		whenThere.put(turn, new Point(x-1,y));
-		map.put(new Point(x+1,y), hasBoolean[2]);
+		map.put(new Point(x+1,y), hasBoolean[WEST]);
 		whenThere.put(turn, new Point(x+1,y));
 
-		map.put(new Point(x,y-1), hasBoolean[3]);
+		map.put(new Point(x,y-1), hasBoolean[SOUTH]);
 		whenThere.put(turn, new Point(x,y-1));
 
-		map.put(new Point(x,y+1), hasBoolean[4]);
+		map.put(new Point(x,y+1), hasBoolean[NORTH]);
 		whenThere.put(turn, new Point(x,y+1));
 
 
-		if (m.type() == 1) {
+		if (m.type() == EAST) {
 			x--;
 		}
-		else if (m.type() == 2) {
+		else if (m.type() == WEST) {
 			x++;
 		}
-		else if (m.type() == 3) {
-			y--;
-		}
-		else if (m.type() == 4) {
+		else if (m.type() == NORTH) {
 			y++;
+		}
+		else if (m.type() == SOUTH) {
+			y--;
 		}
 	}
 
