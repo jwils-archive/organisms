@@ -24,6 +24,8 @@ public abstract class Group4BasePlayer implements Player, Constants  {
 	public int ENERGY_TO_MOVE = 0;
 	public int ENERGY_TO_STAY_PUT = 0;
 	
+	protected int lastMove = -1;
+	
 	static final String _CNAME = "Group 4 first player";
 	Color _CColor = new Color(0.0f, 0.67f, 0.67f);
 	private int state;
@@ -129,7 +131,8 @@ public abstract class Group4BasePlayer implements Player, Constants  {
 		}
 
 		postMoveTrack(move, foodpresent, neighbors, foodleft, energyleft);
-
+		
+		lastMove = move.type();
 		return move;
 	}
 	 

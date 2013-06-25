@@ -5,20 +5,26 @@ import java.util.ArrayList;
 import organisms.Move;
 
 public class GroupingPlayer extends KnowledgePlayer {
-
+	boolean alone = false;
+	
 	@Override
 	protected Move reproduce(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
-		double foodDist = foodTracker.lastXMovesPercentage(100);
-		double otherOrgDist = organismTracker.lastXMovesPercentage(100);
+		setState(88); //nextRandomInt(255));
 
-		if (energyleft > MAX_ENERGY/2 +  (MAX_ENERGY/4)*otherOrgDist  + (MAX_ENERGY/4)*foodDist ) {
+
+		if (energyleft > MAX_ENERGY / 2 && numberOfFriendlyNeighbors(neighbors) != 3) {
 			int direction = -1;
 			for (int i = 1; i < 5; i++) {
 				if (foodpresent[i] && neighbors[i] == -1) {
 					direction = i;
 				}
 			}
+			
+			if (lastMove > 0 && lastMove < 5 && neighbors[reverse(lastMove)] == -1) {
+				direction = reverse(lastMove);
+			}
+			
 			if (direction == -1) {
 				for (int i = 1; i < 5; i++) {
 					if (neighbors[i] == -1) {
@@ -32,6 +38,16 @@ public class GroupingPlayer extends KnowledgePlayer {
 		return null;
 	}
 
+	
+	private int numberOfFriendlyNeighbors(int[] neighbors) {
+		int sum = 0;
+		for(int i = 0; i < 5; i++) {
+			if (neighbors[i] == 88) {
+				sum++;
+			}
+		}
+		return sum;
+	}
 	protected boolean foodNextTo(int[] nbors, boolean[] foodHere) {
 		boolean foodAdjacent = false;
 		for (int move : getValidMoves(nbors)) {
@@ -46,44 +62,40 @@ public class GroupingPlayer extends KnowledgePlayer {
 	protected Move makeMove(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
 
-		
-		System.out.println("State : (" + foodTracker.getX() + ", " + foodTracker.getY() + ")");
-		
 		if (turnNumber > 50) {
 			for (int move : getValidMoves(neighbors)) {
-				if ((foodTracker.getX() + foodTracker.getY()) % 2 != 0) {
+				
+				if (!(foodleft > 0 && energyleft < (2/3*MAX_ENERGY)) && (foodTracker.getX() + foodTracker.getY()) % 2 != 0) {
 					return new Move(move);
+				}
+			}
+			if (!alone || energyleft < ENERGY_TO_MOVE * 2) {
+				for (int move : getValidMoves(neighbors)) {
+					if (foodpresent[move] && neighbors[move] == -1) {
+						return new Move(move);
+					}
 				}
 			}
 
-			for (int move : getValidMoves(neighbors)) {
-				if (foodpresent[move] && neighbors[move]==-1) {
-					return new Move(move);
-				}
-			}
-			
 		} else {
 			ArrayList<Integer> moves = new ArrayList<Integer>();
 			for (int move : getValidMoves(neighbors)) {
 				moves.add(move);
 			}
-			
+
 			int direction = 0;
-			
+
 			if (moves.contains(SOUTH)) {
 				direction = SOUTH;
 			}
 			if (foodTracker.getY() % 2 != 0) {
-				if (moves.contains(EAST)) {
+				if (moves.contains(EAST) && moves.contains(WEST)) {
 					direction = EAST;
-				} else if(moves.contains(WEST)) {
-					direction = WEST;
 				}
 			}
-			
-			
+
 			for (int move : getValidMoves(neighbors)) {
-				if (foodpresent[move] && neighbors[move]==-1) {
+				if (foodpresent[move] && neighbors[move] == -1) {
 					direction = move;
 				}
 			}
@@ -109,7 +121,6 @@ public class GroupingPlayer extends KnowledgePlayer {
 		}
 		return null;
 
-		
 	}
 
 	@Override
