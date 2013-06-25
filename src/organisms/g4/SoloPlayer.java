@@ -3,30 +3,21 @@ package organisms.g4;
 import organisms.Move;
 
 @SuppressWarnings("serial")
-public class HeuristicPlayer extends TrackingPlayer {
+public class SoloPlayer extends TrackingPlayer {
 	int curDir = 1;
-	int ctr = 0;
-	boolean first = true;
 
 	@Override
 	protected void register(int key) {
-		if(key!=-1){
-			ctr = getState();
-		}else{
-			ctr = 0;
-		}
+
 	}
 
 	@Override
 	protected Move reproduce(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
+		double foodDist = foodTracker.lastXMovesPercentage(1000);
+		double otherOrgDist = organismTracker.lastXMovesPercentage(10);
 		
-		ctr++;
-
-		double foodDist = foodTracker.lastXMovesPercentage(100);
-		double otherOrgDist = organismTracker.lastXMovesPercentage(100);
-		
-		if (energyleft > MAX_ENERGY/2 -   (MAX_ENERGY/2)*foodDist ){
+		if (energyleft > MAX_ENERGY*.97 && otherOrgDist >0.995){//MAX_ENERGY/2 +  (MAX_ENERGY/2)*otherOrgDist -(MAX_ENERGY/2)*foodDist){//+  (MAX_ENERGY/2)*otherOrgDist  - (MAX_ENERGY/2)*foodDist ){
 			int direction = -1;
 			for (int i =1; i < 5; i++) {
 				if (foodpresent[i] && neighbors[i] == -1) {
@@ -40,7 +31,7 @@ public class HeuristicPlayer extends TrackingPlayer {
 					}
 				}
 			}
-			return new Move(REPRODUCE, direction, ctr);
+			return new Move(REPRODUCE, direction, getState());
 		}
 
 		return null;
@@ -63,7 +54,7 @@ public class HeuristicPlayer extends TrackingPlayer {
 		double foodDist = foodTracker.lastXMovesPercentage(100);
 		double otherOrgDist = organismTracker.lastXMovesPercentage(100);
 		
-		if (foodleft==0 && ctr>5 && (energyleft <= (MAX_ENERGY/2) + (MAX_ENERGY/2)*(otherOrgDist) + (MAX_ENERGY/2)*(foodDist) )  && !foodNextTo(neighbors, foodpresent)) {
+		if (foodleft==0 && (energyleft > 200 || !foodNextTo(neighbors, foodpresent))) {
 			return null;
 		}
 		
@@ -71,13 +62,9 @@ public class HeuristicPlayer extends TrackingPlayer {
 		if((neighbors[(curDir) ]==-1)){}
 		else{
 			for (int i = 1 ; i < 5 ; i++) {
-				boolean br = false;
 				if(neighbors[i ]==-1){
 					direction =i;
 					curDir=i;
-					br=true;
-				}
-				if (br){
 					break;
 				}
 			}
@@ -109,7 +96,7 @@ public class HeuristicPlayer extends TrackingPlayer {
 
 	@Override
 	public String name() {
-		return "Heuristic Player";
+		return "Solo Player";
 	}
 
 }
