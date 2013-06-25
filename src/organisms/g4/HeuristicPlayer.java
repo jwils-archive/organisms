@@ -5,19 +5,28 @@ import organisms.Move;
 @SuppressWarnings("serial")
 public class HeuristicPlayer extends TrackingPlayer {
 	int curDir = 1;
+	int ctr = 0;
+	boolean first = true;
 
 	@Override
 	protected void register(int key) {
-
+		if(key!=-1){
+			ctr = getState();
+		}else{
+			ctr = 0;
+		}
 	}
 
 	@Override
 	protected Move reproduce(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
+		
+		ctr++;
+
 		double foodDist = foodTracker.lastXMovesPercentage(100);
 		double otherOrgDist = organismTracker.lastXMovesPercentage(100);
 		
-		if (energyleft > MAX_ENERGY/2 +  (MAX_ENERGY/4)*otherOrgDist  + (MAX_ENERGY/4)*foodDist ){
+		if (energyleft > MAX_ENERGY/2 -   (MAX_ENERGY/2)*foodDist ){
 			int direction = -1;
 			for (int i =1; i < 5; i++) {
 				if (foodpresent[i] && neighbors[i] == -1) {
@@ -31,7 +40,7 @@ public class HeuristicPlayer extends TrackingPlayer {
 					}
 				}
 			}
-			return new Move(REPRODUCE, direction, getState());
+			return new Move(REPRODUCE, direction, ctr);
 		}
 
 		return null;
@@ -54,7 +63,7 @@ public class HeuristicPlayer extends TrackingPlayer {
 		double foodDist = foodTracker.lastXMovesPercentage(100);
 		double otherOrgDist = organismTracker.lastXMovesPercentage(100);
 		
-		if ((energyleft <= (MAX_ENERGY/2) - (MAX_ENERGY/2)*(otherOrgDist) ) && energyleft>ENERGY_TO_MOVE * 5 && !foodNextTo(neighbors, foodpresent)) {
+		if (foodleft==0 && ctr>5 && (energyleft <= (MAX_ENERGY/2) + (MAX_ENERGY/2)*(otherOrgDist) + (MAX_ENERGY/2)*(foodDist) )  && !foodNextTo(neighbors, foodpresent)) {
 			return null;
 		}
 		
@@ -62,9 +71,13 @@ public class HeuristicPlayer extends TrackingPlayer {
 		if((neighbors[(curDir) ]==-1)){}
 		else{
 			for (int i = 1 ; i < 5 ; i++) {
+				boolean br = false;
 				if(neighbors[i ]==-1){
 					direction =i;
 					curDir=i;
+					br=true;
+				}
+				if (br){
 					break;
 				}
 			}
