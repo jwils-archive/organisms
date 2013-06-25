@@ -4,14 +4,19 @@ import java.util.ArrayList;
 
 import organisms.Move;
 
+@SuppressWarnings("serial")
 public class GroupingPlayer extends KnowledgePlayer {
 	boolean alone = false;
 	
 	@Override
 	protected Move reproduce(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
-		setState(88); //nextRandomInt(255));
+		setState(88); //nextRandomInt(255);
 
+		if (numberOfFriendlyNeighbors(neighbors) == 4) {
+			setState(89);
+		}
+		
 		if (energyleft > MAX_ENERGY / 2 && numberOfFriendlyNeighbors(neighbors) != 3) {
 			int direction = -1;
 			for (int i = 1; i < 5; i++) {
@@ -40,7 +45,7 @@ public class GroupingPlayer extends KnowledgePlayer {
 	
 	private int numberOfFriendlyNeighbors(int[] neighbors) {
 		int sum = 0;
-		for(int i = 0; i < 5; i++) {
+		for(int i = 1; i < 5; i++) {
 			if (neighbors[i] == 88) {
 				sum++;
 			}
@@ -64,7 +69,8 @@ public class GroupingPlayer extends KnowledgePlayer {
 		if (turnNumber > 50) {
 			for (int move : getValidMoves(neighbors)) {
 				
-				if (!(foodleft > 0 && energyleft < (2/3*MAX_ENERGY)) && (foodTracker.getX() + foodTracker.getY()) % 2 != 0) {
+				if (!(foodleft > 0 && energyleft < (2/3*MAX_ENERGY)) && 
+						(foodTracker.getX() + foodTracker.getY()) % 2 != 0) {
 					return new Move(move);
 				}
 			}
@@ -74,6 +80,10 @@ public class GroupingPlayer extends KnowledgePlayer {
 						return new Move(move);
 					}
 				}
+			}
+			
+			if (neighbors[NORTH] == 89 && neighbors[SOUTH] == -1) {
+					return new Move(SOUTH);
 			}
 
 		} else {
