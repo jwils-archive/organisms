@@ -15,7 +15,7 @@ public class SoloPlayer extends TrackingPlayer {
 	protected Move reproduce(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
 		double foodDist = foodTracker.lastXMovesPercentage(1000);
-		double otherOrgDist = organismTracker.lastXMovesPercentage(10-0);
+		double otherOrgDist = organismTracker.lastXMovesPercentage(10);
 		
 		if (energyleft > MAX_ENERGY*.97 && otherOrgDist >0.995){//MAX_ENERGY/2 +  (MAX_ENERGY/2)*otherOrgDist -(MAX_ENERGY/2)*foodDist){//+  (MAX_ENERGY/2)*otherOrgDist  - (MAX_ENERGY/2)*foodDist ){
 			int direction = -1;
