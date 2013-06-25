@@ -73,7 +73,6 @@ public class KnowledgePlayer extends Group4BasePlayer {
 		foodTracker.add(move, foodpresent);
 		organismTracker.add(move, neighbors);
 		turnNumber++;
-		setState(-1*foodTracker.getY());
 	}
 	
 	@Override
@@ -123,7 +122,7 @@ public class KnowledgePlayer extends Group4BasePlayer {
 		return null;
 	}
 	
-	private int reverse(int direction) {
+	protected int reverse(int direction) {
 		switch(direction) {
 		case NORTH:
 			return SOUTH;
