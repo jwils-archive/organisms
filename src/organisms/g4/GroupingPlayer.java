@@ -12,7 +12,7 @@ public class GroupingPlayer extends KnowledgePlayer {
 		double foodDist = foodTracker.lastXMovesPercentage(100);
 		double otherOrgDist = organismTracker.lastXMovesPercentage(100);
 
-		if (energyleft > MAX_ENERGY / 2) {
+		if (energyleft > MAX_ENERGY/2 +  (MAX_ENERGY/4)*otherOrgDist  + (MAX_ENERGY/4)*foodDist ) {
 			int direction = -1;
 			for (int i = 1; i < 5; i++) {
 				if (foodpresent[i] && neighbors[i] == -1) {
