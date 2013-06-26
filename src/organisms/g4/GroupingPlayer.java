@@ -65,7 +65,7 @@ public class GroupingPlayer extends KnowledgePlayer {
 	}
 
 	
-	private int numberOfFriendlyNeighbors(int[] neighbors) {
+	protected int numberOfFriendlyNeighbors(int[] neighbors) {
 		int sum = 0;
 		for(int i = 1; i < 5; i++) {
 			if (neighbors[i] == 88) {
@@ -89,7 +89,35 @@ public class GroupingPlayer extends KnowledgePlayer {
 	protected Move makeMove(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
 
+//		if (lastMove > 0 && lastMove < 5 && friendlySquares[lastMove]) {
+//			return new Move(reverse(lastMove));
+//		}
+//		
+//		if (numberOfFriendlyNeighbors(neighbors) == 3 && neighbors[reverse(lastMove)] == -1) {
+//			friendlySquares[lastMove] = true;
+//			return new Move(reverse(lastMove));
+//		}
+		
 		if (turnNumber > 50) {
+			
+//			boolean hasFriendly = false;
+//			for (boolean friendly : friendlySquares) {
+//				if (friendly) {
+//					hasFriendly = true;
+//				}
+//			}
+//			
+//			if (hasFriendly) {
+//				if (energyleft < ENERGY_TO_MOVE*1.5) {
+//					for (int i = 1; i < 5; i++) {
+//						if (friendlySquares[i] && foodpresent[i]) {
+//							return new Move(i);
+//						}
+//					}
+//				} 
+//			}
+			
+			
 			for (int move : getValidMoves(neighbors)) {
 				
 				if (!(foodleft > 0 && energyleft < (2/3*MAX_ENERGY)) && 
@@ -158,7 +186,6 @@ public class GroupingPlayer extends KnowledgePlayer {
 
 	@Override
 	public String name() {
-		// TODO Auto-generated method stub
 		return "Grouping Player";
 	}
 }
