@@ -54,7 +54,7 @@ public class SoloPlayer extends TrackingPlayer {
 		double foodDist = foodTracker.lastXMovesPercentage(100);
 		double otherOrgDist = organismTracker.lastXMovesPercentage(100);
 		
-		if (foodleft==0 && (energyleft > 200 || !foodNextTo(neighbors, foodpresent))) {
+		if ((foodleft==0 && (energyleft > 100 || !foodNextTo(neighbors, foodpresent))) || (foodleft > 0 && energyleft > 450)) {
 			return null;
 		}
 		
