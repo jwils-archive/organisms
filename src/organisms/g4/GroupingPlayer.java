@@ -8,13 +8,35 @@ import organisms.Move;
 public class GroupingPlayer extends KnowledgePlayer {
 	boolean alone = false;
 	
+	static int NORMAL_STATE = 88;
+	static int MOVE_STATE = 89;
+	
+	private boolean[] friendlySquares = new boolean[5];
+	
+	@Override
+	protected void preMoveTrack(boolean[] foodpresent, int[] neighbors,
+			int foodleft, int energyleft) {
+		super.preMoveTrack(foodpresent, neighbors, foodleft, energyleft);
+		for (int n = 1; n < 5; n++) {
+			if (neighbors[n] == MOVE_STATE) {
+				friendlySquares[n] = true;
+			}
+			if ((friendlySquares[n] == true) &&
+					(neighbors[n] != NORMAL_STATE) &&
+					(neighbors[n] != MOVE_STATE) &&
+					(neighbors[n] != -1)) {
+				friendlySquares[n] = false;
+			}
+		}
+	}
+	
 	@Override
 	protected Move reproduce(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
-		setState(88); //nextRandomInt(255);
+		setState(NORMAL_STATE); //nextRandomInt(255);
 
 		if (numberOfFriendlyNeighbors(neighbors) == 4) {
-			setState(89);
+			setState(MOVE_STATE);
 		}
 		
 		if (energyleft > MAX_ENERGY / 2 && numberOfFriendlyNeighbors(neighbors) != 3) {
@@ -52,6 +74,7 @@ public class GroupingPlayer extends KnowledgePlayer {
 		}
 		return sum;
 	}
+	
 	protected boolean foodNextTo(int[] nbors, boolean[] foodHere) {
 		boolean foodAdjacent = false;
 		for (int move : getValidMoves(nbors)) {
@@ -83,7 +106,8 @@ public class GroupingPlayer extends KnowledgePlayer {
 			}
 			
 			if (neighbors[NORTH] == 89 && neighbors[SOUTH] == -1) {
-					return new Move(SOUTH);
+				setState(MOVE_STATE);
+				return new Move(SOUTH);
 			}
 
 		} else {
