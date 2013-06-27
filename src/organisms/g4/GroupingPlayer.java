@@ -1,187 +1,123 @@
 package organisms.g4;
 
-import java.util.ArrayList;
-
 import organisms.Move;
+import organisms.g4.strat.*;
 
 @SuppressWarnings("serial")
 public class GroupingPlayer extends KnowledgePlayer {
 	boolean alone = false;
 	
-	static int NORMAL_STATE = 88;
-	static int MOVE_STATE = 89;
+	public static int NORMAL_STATE = 88;
+	public static int MOVE_STATE = 89;
+	
+	public boolean isAgressive = false;
+	
+	private Strategy strat;
 	
 	private boolean[] friendlySquares = new boolean[5];
 	
+	double reproductionThreshold;
+	
+	boolean westWas89LastTurn = false;
+	
+	
+	int direction;
+	
 	@Override
-	protected void preMoveTrack(boolean[] foodpresent, int[] neighbors,
-			int foodleft, int energyleft) {
-		super.preMoveTrack(foodpresent, neighbors, foodleft, energyleft);
+	protected void init() {
+		super.init();
+		reproductionThreshold = (double)(nextRandomInt(4) + 5)/10;
+	}
+	
+	@Override
+	protected void preMoveTrack(MoveInfo moveInfo) {
+		super.preMoveTrack(moveInfo);
 		for (int n = 1; n < 5; n++) {
-			if (neighbors[n] == MOVE_STATE) {
+			if (moveInfo.getNeighbors()[n] == MOVE_STATE) {
 				friendlySquares[n] = true;
 			}
 			if ((friendlySquares[n] == true) &&
-					(neighbors[n] != NORMAL_STATE) &&
-					(neighbors[n] != MOVE_STATE) &&
-					(neighbors[n] != -1)) {
+					(moveInfo.getNeighbors()[n] != NORMAL_STATE) &&
+					(moveInfo.getNeighbors()[n] != MOVE_STATE) &&
+					(moveInfo.getNeighbors()[n] != -1)) {
 				friendlySquares[n] = false;
 			}
 		}
 	}
 	
+
+	private void setStrategy(MoveInfo moveInfo) {
+		if (getTurnNumber() < 8) {
+			reproductionThreshold = 0.5;
+		}
+		int moveNumber = 150 - turnsSinceLastMove;
+		if(moveNumber <= 20) {
+			moveNumber = 20;
+		}
+		
+		if (nextRandomInt(100) < 20) {
+			isAgressive = false;
+		}
+
+		
+		if (nextRandomInt(moveNumber) < 9 && moveInfo.getValidMoves().length == 4) {
+			isAgressive = true;
+		}
+		
+		
+		
+		if (getTurnNumber() < 50 || isAgressive) {
+			strat = new AgressiveStrat(this, foodTracker.getX(), foodTracker.getY(), reproductionThreshold);
+		} else {
+			strat = new GridStrat(this, foodTracker.getX(), foodTracker.getY());
+		}
+	}
+	
 	@Override
-	protected Move reproduce(boolean[] foodpresent, int[] neighbors,
-			int foodleft, int energyleft) {
+	public Move reproduce(MoveInfo moveInfo) {
+		setStrategy(moveInfo);
 		setState(NORMAL_STATE); //nextRandomInt(255);
 
-		if (numberOfFriendlyNeighbors(neighbors) == 4) {
+		if (moveInfo.numberOfFriendlyNeighbors() == 4) {
 			setState(MOVE_STATE);
 		}
 		
-		if (energyleft > MAX_ENERGY / 2 && numberOfFriendlyNeighbors(neighbors) != 3) {
-			int direction = -1;
-			for (int i = 1; i < 5; i++) {
-				if (foodpresent[i] && neighbors[i] == -1) {
-					direction = i;
-				}
-			}
-			
-			if (lastMove > 0 && lastMove < 5 && neighbors[reverse(lastMove)] == -1) {
-				direction = reverse(lastMove);
-			}
-			
-			if (direction == -1) {
-				for (int i = 1; i < 5; i++) {
-					if (neighbors[i] == -1) {
-						direction = i;
-					}
-				}
-			}
-			return reproduce(direction);
-		}
-
-		return null;
-	}
-
-	
-	protected int numberOfFriendlyNeighbors(int[] neighbors) {
-		int sum = 0;
-		for(int i = 1; i < 5; i++) {
-			if (neighbors[i] == 88) {
-				sum++;
-			}
-		}
-		return sum;
-	}
-	
-	protected boolean foodNextTo(int[] nbors, boolean[] foodHere) {
-		boolean foodAdjacent = false;
-		for (int move : getValidMoves(nbors)) {
-			if (foodHere[move] && nbors[move] == -1) {
-				foodAdjacent = true;
-			}
-		}
-		return foodAdjacent;
+		
+		return strat.reproduce(moveInfo);
 	}
 
 	@Override
-	protected Move makeMove(boolean[] foodpresent, int[] neighbors,
-			int foodleft, int energyleft) {
-
-//		if (lastMove > 0 && lastMove < 5 && friendlySquares[lastMove]) {
-//			return new Move(reverse(lastMove));
-//		}
-//		
-//		if (numberOfFriendlyNeighbors(neighbors) == 3 && neighbors[reverse(lastMove)] == -1) {
-//			friendlySquares[lastMove] = true;
-//			return new Move(reverse(lastMove));
-//		}
-		
-		if (turnNumber > 50) {
-			
-//			boolean hasFriendly = false;
-//			for (boolean friendly : friendlySquares) {
-//				if (friendly) {
-//					hasFriendly = true;
-//				}
-//			}
-//			
-//			if (hasFriendly) {
-//				if (energyleft < ENERGY_TO_MOVE*1.5) {
-//					for (int i = 1; i < 5; i++) {
-//						if (friendlySquares[i] && foodpresent[i]) {
-//							return new Move(i);
-//						}
-//					}
-//				} 
-//			}
-			
-			
-			for (int move : getValidMoves(neighbors)) {
-				
-				if (!(foodleft > 0 && energyleft < (2/3*MAX_ENERGY)) && 
-						(foodTracker.getX() + foodTracker.getY()) % 2 != 0) {
-					return new Move(move);
-				}
-			}
-			if (!alone || energyleft < ENERGY_TO_MOVE * 2) {
-				for (int move : getValidMoves(neighbors)) {
-					if (foodpresent[move] && neighbors[move] == -1) {
-						return new Move(move);
-					}
-				}
-			}
-			
-			if (neighbors[NORTH] == 89 && neighbors[SOUTH] == -1) {
-				setState(MOVE_STATE);
-				return new Move(SOUTH);
-			}
-
-		} else {
-			ArrayList<Integer> moves = new ArrayList<Integer>();
-			for (int move : getValidMoves(neighbors)) {
-				moves.add(move);
-			}
-
-			int direction = 0;
-
-			if (moves.contains(SOUTH)) {
-				direction = SOUTH;
-			}
-			if (foodTracker.getY() % 2 != 0) {
-				if (moves.contains(EAST) && moves.contains(WEST)) {
-					direction = EAST;
-				}
-			}
-
-			for (int move : getValidMoves(neighbors)) {
-				if (foodpresent[move] && neighbors[move] == -1) {
-					direction = move;
-				}
-			}
-			Move m = null;
-			switch (direction) {
-			case 0:
-				m = new Move(STAYPUT);
-				break;
-			case 1:
-				m = new Move(WEST);
-				break;
-			case 2:
-				m = new Move(EAST);
-				break;
-			case 3:
-				m = new Move(NORTH);
-				break;
-			case 4:
-				m = new Move(SOUTH);
-				break;
-			}
-			return m;
+	public Move makeMove(MoveInfo moveInfo) {
+		if (westWas89LastTurn && moveInfo.getNeighbor(EAST) == -1) {
+			westWas89LastTurn = false;
+			setState(GroupingPlayer.MOVE_STATE);
+			return new Move(EAST);
 		}
-		return null;
+		
+		if (moveInfo.getFoodleft() > 0 && moveInfo.numberOfFriendlyNeighbors() < 3) {
+			return null;
+		}
+		
+		if (moveInfo.getNeighbor(WEST) == 89) {
+			westWas89LastTurn = true;
+		} else {
+			westWas89LastTurn = false;
+		}
+		
+		if (isAgressive && moveInfo.numberOfFriendlyNeighbors() > 2) {
+			isAgressive = false;
+			if( moveInfo.canMove()) {
+				return new Move(moveInfo.getValidMoves()[0]);
+			}
+		}
+		if(reproductionThreshold > .69 
+				&& turnsSinceLastMove < 10 
+				&& isAgressive && !moveInfo.canMoveToFood()
+				&& moveInfo.numberOfFriendlyNeighbors() < 2) {
+			return new Move(STAYPUT);
+		}
 
+		return strat.makeMove(moveInfo);
 	}
 
 	@Override

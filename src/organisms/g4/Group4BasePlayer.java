@@ -7,8 +7,9 @@ import java.util.Random;
 import organisms.Move;
 import organisms.OrganismsGame;
 import organisms.Player;
+import organisms.g4.strat.Strategy;
 
-public abstract class Group4BasePlayer implements Player, Constants  {
+public abstract class Group4BasePlayer implements Player, Constants, Strategy  {
 
 	/**
 	 * 
@@ -25,6 +26,7 @@ public abstract class Group4BasePlayer implements Player, Constants  {
 	public int ENERGY_TO_STAY_PUT = 0;
 	
 	protected int lastMove = -1;
+	int turnsSinceLastMove = 0;
 	
 	static final String _CNAME = "Group 4 first player";
 	Color _CColor = new Color(0.0f, 0.67f, 0.67f);
@@ -50,7 +52,7 @@ public abstract class Group4BasePlayer implements Player, Constants  {
 		register(key);
 	}
 	
-	protected int nextRandomInt(int max) {
+	public int nextRandomInt(int max) {
 		return rand.nextInt(max);
 	}
 	
@@ -58,13 +60,21 @@ public abstract class Group4BasePlayer implements Player, Constants  {
 	
 	protected abstract void register(int key);
 	
-	protected abstract Move reproduce(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft);
+	public Move reproduce(MoveInfo moveData) {
+		return reproduce(moveData.getFoodpresent(), moveData.getNeighbors(), moveData.getFoodleft(), moveData.getEnergyleft());
+	}
 
-	protected abstract Move makeMove(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft);
+	public Move makeMove(MoveInfo moveData) {
+		return makeMove(moveData.getFoodpresent(), moveData.getNeighbors(), moveData.getFoodleft(), moveData.getEnergyleft());
+	}
 	
-	protected void preMoveTrack(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {};
+	protected void preMoveTrack(MoveInfo moveData) {
+		preMoveTrack(moveData.getFoodpresent(), moveData.getNeighbors(), moveData.getFoodleft(), moveData.getEnergyleft());
+	}
 
-	protected void postMoveTrack(Move move, boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {};
+	protected void postMoveTrack(Move move, MoveInfo moveData) {
+		postMoveTrack(move, moveData.getFoodpresent(), moveData.getNeighbors(), moveData.getFoodleft(), moveData.getEnergyleft());
+	}
 
 	/*
 	 * Return the name to be displayed in the simulator.
@@ -99,7 +109,7 @@ public abstract class Group4BasePlayer implements Player, Constants  {
 		return state;
 	}
 
-	protected void setState(int s) {
+	public void setState(int s) {
 		state = s;
 	}
 	
@@ -116,26 +126,51 @@ public abstract class Group4BasePlayer implements Player, Constants  {
 	 * remaining energy
 	 */
 	public Move move(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {
-		preMoveTrack(foodpresent, neighbors, foodleft, energyleft);
+		MoveInfo moveData = new MoveInfo(foodpresent, neighbors, foodleft, energyleft, lastMove);
+		
+		preMoveTrack(moveData);
 
 		Move move; // placeholder for return value
 
-		move = reproduce(foodpresent, neighbors, foodleft, energyleft);
+		move = reproduce(moveData);
 		
 		if (move == null) {
-			move = makeMove(foodpresent, neighbors, foodleft, energyleft);
+			move = makeMove(moveData);
 		}
 	
 		if (move == null) {
 			move = new Move(STAYPUT);
 		}
+		
+		if (move.type() < 5 && move.type() > 0) {
+			if (neighbors[move.type()] != -1) {
+				move = new Move(STAYPUT);
+			}
+		}
+		
+		if(move.type() == REPRODUCE && move.childpos() > 0 &&  neighbors[move.childpos()] != -1) {
+			move = new Move(STAYPUT);
+		}
 
-		postMoveTrack(move, foodpresent, neighbors, foodleft, energyleft);
+		if (move.type() == 0) {
+			turnsSinceLastMove++;
+		} else {
+			turnsSinceLastMove = 0;
+		}
+		postMoveTrack(move, moveData);
 		
 		lastMove = move.type();
 		return move;
 	}
 	 
+	
+	/***
+	 * Functions below are deprecated. Use MoveInfo class 
+	 * 
+	 */
+	
+	
+	@Deprecated
 	public boolean isValidMove(int move, int[] neighbors) {
 		if (neighbors[move] != -1) {
 			return false;
@@ -143,6 +178,7 @@ public abstract class Group4BasePlayer implements Player, Constants  {
 		return true;
 	}
 	
+	@Deprecated
 	public int[] getValidMoves(int[] neighbors) {
 		int[] validMoves = new int[4];
 		int validMoveCount = 0;
@@ -153,4 +189,26 @@ public abstract class Group4BasePlayer implements Player, Constants  {
 		}
 		return Arrays.copyOf(validMoves, validMoveCount);
 	}
+	
+	@Deprecated
+	public Move headForFood(boolean[] foodpresent, int[]  neighbors) {
+		for (int move : getValidMoves(neighbors)) {
+			if (foodpresent[move] && neighbors[move] == -1) {
+				return new Move(move);
+			}
+		}
+		return null;
+	}
+	
+	@Deprecated
+	protected Move reproduce(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {return null;}
+	
+	@Deprecated
+	protected Move makeMove(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {return null;}
+	
+	@Deprecated
+	protected void preMoveTrack(boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {}
+	
+	@Deprecated
+	protected void postMoveTrack(Move move, boolean[] foodpresent, int[] neighbors, int foodleft, int energyleft) {}
 }

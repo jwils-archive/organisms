@@ -1,7 +1,5 @@
 package organisms.g4;
 
-import java.nio.ByteBuffer;
-
 import organisms.Move;
 import organisms.g4.codec.Decoder;
 import organisms.g4.comm.DataForChild;
@@ -11,7 +9,7 @@ import organisms.g4.trackers.PersonalSettingsTracker;
 
 @SuppressWarnings("serial")
 public class KnowledgePlayer extends Group4BasePlayer {
-	protected int turnNumber = 0;
+	private int turnNumber = 0;
 	protected FoodTracker foodTracker;
 	protected OrganismTracker organismTracker;
 	protected PersonalSettingsTracker settingsTracker;
@@ -23,7 +21,7 @@ public class KnowledgePlayer extends Group4BasePlayer {
 	protected void register(int key) {
 		setColor(1.0f,0.0f,1.0f);
 		if (key == -1) {
-			turnNumber = 1;
+			setTurnNumber(1);
 			directionOfCommunication = -1;
 			
 			foodTracker = new FoodTracker();
@@ -36,7 +34,7 @@ public class KnowledgePlayer extends Group4BasePlayer {
 			foodTracker = new FoodTracker(-data.getOriginX(), -data.getOriginY());
 			organismTracker = new OrganismTracker(-data.getOriginX(), -data.getOriginY());
 			settingsTracker = new PersonalSettingsTracker();
-			turnNumber = data.getTurnNumber() + 1;
+			setTurnNumber(data.getTurnNumber() + 1);
 		}
 		
 	}
@@ -50,9 +48,8 @@ public class KnowledgePlayer extends Group4BasePlayer {
 	
 	
 	@Override
-	protected Move reproduce(boolean[] foodpresent, int[] neighbors,
-			int foodleft, int energyleft) {
-		Move m = communicate(neighbors);
+	public Move reproduce(MoveInfo moveInfo) {
+		Move m = communicate(moveInfo.getNeighbors());
 		if (m != null) {
 			return m;
 		}
@@ -61,23 +58,20 @@ public class KnowledgePlayer extends Group4BasePlayer {
 	}
 
 	@Override
-	protected void preMoveTrack(boolean[] foodpresent, int[] neighbors,
-			int foodleft, int energyleft) {
-		foodTracker.add(foodleft);
+	protected void preMoveTrack(MoveInfo moveInfo) {
+		foodTracker.add(moveInfo.getFoodleft());
 	}
 
 	@Override
-	protected void postMoveTrack(Move move, boolean[] foodpresent,
-			int[] neighbors, int foodleft, int energyleft) {
-		settingsTracker.psTrackerStore(energyleft, move.type()==REPRODUCE);	
-		foodTracker.add(move, foodpresent);
-		organismTracker.add(move, neighbors);
-		turnNumber++;
+	protected void postMoveTrack(Move move, MoveInfo moveInfo) {
+		settingsTracker.psTrackerStore(moveInfo.getEnergyleft(), move.type()==REPRODUCE);	
+		foodTracker.add(move, moveInfo.getFoodpresent());
+		organismTracker.add(move, moveInfo.getNeighbors());
+		setTurnNumber(getTurnNumber() + 1);
 	}
 	
 	@Override
-	protected Move makeMove(boolean[] foodpresent, int[] neighbors,
-			int foodleft, int energyleft) {
+	public Move makeMove(MoveInfo moveInfo) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -89,28 +83,32 @@ public class KnowledgePlayer extends Group4BasePlayer {
 	}
 
 	
-	protected Move reproduce(int direction) {
-		return reproduce(direction, false);
+	public Move reproduce(int direction) {
+		return reproduce(direction, 0, false);
 	}
 	
-	protected Move reproduce(int direction, boolean wantsToComm) {
+	public Move reproduce(int direction, int type) {
+		return reproduce(direction, type, false);
+	}
+	
+	protected Move reproduce(int direction, int type, boolean wantsToComm) {
 		DataForChild data = null;
 		switch(direction) {
 		case NORTH:
 			data = new DataForChild(reverse(direction),
-					-foodTracker.getX(),-(foodTracker.getY() + 1),turnNumber);
+					-foodTracker.getX(),-(foodTracker.getY() + 1),getTurnNumber());
 			break;
 		case SOUTH:
 			data = new DataForChild(reverse(direction),
-					-foodTracker.getX(),-(foodTracker.getY() - 1),turnNumber);
+					-foodTracker.getX(),-(foodTracker.getY() - 1),getTurnNumber());
 			break;
 		case EAST:
 			data = new DataForChild(reverse(direction),
-					-(foodTracker.getX() + 1),-foodTracker.getY(),turnNumber);
+					-(foodTracker.getX() + 1),-foodTracker.getY(),getTurnNumber());
 			break;
 		case WEST:
 			data = new DataForChild(reverse(direction),
-					-(foodTracker.getX() - 1),-foodTracker.getY(),turnNumber);
+					-(foodTracker.getX() - 1),-foodTracker.getY(),getTurnNumber());
 			break;
 		
 		}
@@ -134,5 +132,13 @@ public class KnowledgePlayer extends Group4BasePlayer {
 			return EAST;
 		}
 		return -1;
+	}
+
+	public int getTurnNumber() {
+		return turnNumber;
+	}
+
+	public void setTurnNumber(int turnNumber) {
+		this.turnNumber = turnNumber;
 	}
 }

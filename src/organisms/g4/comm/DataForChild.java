@@ -10,9 +10,7 @@ public class DataForChild {
 	
 	private final int ADD_TO_LOCATION = (int)Math.pow(2,LOCATION_WIDTH) / 2 - 1;
 	
-	
-	private int turnNumber;
-	
+	private int turnNumber;	
 	
 	private DataForChild(int encodedData) {
 		parentLocation = encodedData & getMask(DOP_WIDTH);

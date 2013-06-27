@@ -16,9 +16,9 @@ public class FusedPlayer extends KnowledgePlayer {
 	}
 
 	@Override
-	protected Move reproduce(boolean[] foodpresent, int[] neighbors,
+	public Move reproduce(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
-		if (turnNumber < 100 || turnNumber > 200) {
+		if (getTurnNumber() < 100 || getTurnNumber() > 200) {
 			setState(88); //nextRandomInt(255);
 
 			if (numberOfFriendlyNeighbors(neighbors) == 4) {
@@ -94,10 +94,10 @@ public class FusedPlayer extends KnowledgePlayer {
 	}
 
 	@Override
-	protected Move makeMove(boolean[] foodpresent, int[] neighbors,
+	public Move makeMove(boolean[] foodpresent, int[] neighbors,
 			int foodleft, int energyleft) {
 
-		if (turnNumber < 100) {
+		if (getTurnNumber() < 100) {
 			ArrayList<Integer> moves = new ArrayList<Integer>();
 			for (int move : getValidMoves(neighbors)) {
 				moves.add(move);
@@ -139,7 +139,7 @@ public class FusedPlayer extends KnowledgePlayer {
 			}
 			return m;
 		
-		} else if(turnNumber < 200) {
+		} else if(getTurnNumber() < 200) {
 			Move m = null;
 
 			double foodDist = foodTracker.lastXMovesPercentage(100);
